@@ -6,7 +6,7 @@ Learn Python, review a change in OpenCode Desktop, and control ROS 2 Jazzy turtl
 
 1. Install and start Docker Desktop (or Docker Engine on Linux). Run `docker version` in a host terminal and check for a **Server** section. [Docker setup](https://docs.docker.com/get-docker/)
 2. Install VS Code, its **Dev Containers** extension, and OpenCode Desktop. [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers) · [OpenCode Desktop](https://opencode.ai/download)
-3. Clone the repository. Open the cloned folder in VS Code and choose **Dev Containers: Reopen in Container**. Allow time for the first build.
+3. Clone the repository. Open the cloned folder in VS Code and choose **Dev Containers: Reopen in Container**. Allow time for the first image download. The Dev Container pulls the versioned [runtime image](https://gallery.ecr.aws/netizen-robotics/auron-workshop) from Amazon ECR Public. Docker selects AMD64 or ARM64 automatically. Participants can pull it without an AWS account.
 
    ```bash
    git clone https://github.com/netizen-robotics/auron-workshop.git
@@ -33,7 +33,9 @@ Predict the output, run each program, then edit one value and run it again.
 | `python examples/python/movement_conditions.py` | `reverse: linear velocity = -0.30` | Change `movement` to `"forward"`. |
 | `python examples/python/route_functions.py` | `forward for 1.0 s`, `left for 0.5 s`, `forward for 1.0 s`, `Total: 2.5 s` | Add a right turn to the end of `route`. |
 
-## 2. Fix the signed-speed clamp with OpenCode Desktop
+## 2. Practise agentic coding with OpenCode Desktop
+
+OpenCode can inspect the project and edit its files. Review the plan and changes, then run the tests to verify the result.
 
 1. Run the previews and tests in the VS Code Dev Container. Predict the correct signed speeds given a limit of `0.50`.
 

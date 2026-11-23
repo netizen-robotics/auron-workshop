@@ -1,6 +1,6 @@
 {
   "name": "Auron Workshop ROS 2 Jazzy",
-  "build": { "dockerfile": "Dockerfile" },
+  "image": "public.ecr.aws/netizen-robotics/auron-workshop:jazzy-2026.11-v1",
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
   "workspaceFolder": "/workspace",
   "remoteUser": "ubuntu",
