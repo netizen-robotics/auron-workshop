@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Turtlesim Lab · Introduction to ROS 2</title>
+  <link rel="stylesheet" href="lab.css">
+  <script type="module" src="lab.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Turtlesim Lab</h1>
+    <p id="connection" role="status">Connecting to local rosbridge…</p>
+  </header>
+  <main>
+    <section class="viewer" aria-labelledby="live-view">
+      <h2 id="live-view">Live simulator</h2>
+      <div id="screen" role="img" aria-label="Live turtlesim canvas"></div>
+      <dl class="telemetry">
+        <div><dt>X</dt><dd id="pose-x">—</dd></div>
+        <div><dt>Y</dt><dd id="pose-y">—</dd></div>
+        <div><dt>Heading (rad)</dt><dd id="pose-theta">—</dd></div>
+        <div><dt>Speed</dt><dd id="pose-linear">—</dd></div>
+        <div><dt>Turn rate (rad/s)</dt><dd id="pose-angular">—</dd></div>
+        <div><dt>Color sensor</dt><dd id="color">—</dd></div>
+      </dl>
+    </section>
+
+    <section class="controls" aria-label="Introduction to ROS 2">
+      <fieldset class="row turtle-picker" id="picker" disabled>
+        <legend class="visually-hidden">Choose the turtle for the lesson</legend>
+        <label>Turtle <select id="turtle"></select></label>
+        <button id="refresh" type="button">Refresh turtles</button>
+      </fieldset>
+      <div class="lesson-tabs" role="tablist" aria-label="ROS 2 interfaces">
+        <button type="button" role="tab" id="topics-tab" aria-controls="topics" aria-selected="true">Topics</button>
+        <button type="button" role="tab" id="services-tab" aria-controls="services" aria-selected="false" tabindex="-1">Services</button>
+        <button type="button" role="tab" id="actions-tab" aria-controls="actions" aria-selected="false" tabindex="-1">Actions</button>
+        <button type="button" role="tab" id="parameters-tab" aria-controls="parameters" aria-selected="false" tabindex="-1">Parameters</button>
+      </div>
+      <p id="activity" role="status"></p>
+
+      <section class="lesson" role="tabpanel" id="topics" aria-labelledby="topics-tab" tabindex="0">
+        <h2>Publish a command, subscribe to feedback</h2>
+        <p class="exercise">Select a topic to inspect its live messages. Hold <strong>Forward</strong> or ↑, release, then compare the velocity command with the pose feedback.</p>
+        <div class="service-layout topic-layout">
+          <fieldset class="service-list topic-list" id="topic-list">
+            <legend class="visually-hidden">Choose a topic</legend>
+            <label>
+              <input type="radio" name="topic" value="cmd_vel" checked>
+              <span><code data-interface="cmd_vel">/turtle1/cmd_vel</code>
+                <span class="topic-meta">Publish · <code>geometry_msgs/msg/Twist</code></span></span>
+            </label>
+            <label>
+              <input type="radio" name="topic" value="pose">
+              <span><code data-interface="pose">/turtle1/pose</code>
+                <span class="topic-meta">Subscribe · <code>turtlesim/msg/Pose</code></span></span>
+            </label>
+            <label>
+              <input type="radio" name="topic" value="color_sensor">
+              <span><code data-interface="color_sensor">/turtle1/color_sensor</code>
+                <span class="topic-meta">Subscribe · <code>turtlesim/msg/Color</code></span></span>
+            </label>
+          </fieldset>
+          <section class="topic-inspector messages" aria-labelledby="topic-messages">
+            <h3 id="topic-messages">Live ROS messages</h3>
+            <div class="topic-message-body" tabindex="0" role="region" aria-label="Selected topic messages">
+              <div data-topic-view="cmd_vel">
+                <h4>Velocity commands</h4>
+                <p class="exercise">Driving publishes to this topic. The live monitor subscribes to it too, so it also shows commands sent from Python or another tab.</p>
+                <p id="velocity-summary">Waiting for a velocity message…</p>
+                <details id="velocity-details" hidden><summary>Live velocity JSON</summary><pre></pre></details>
+                <h4 class="topic-outbound">Sent from this tab</h4>
+                <p id="command-summary">Drive to publish a velocity command.</p>
+                <details id="command-details" hidden><summary>Sent command JSON</summary><pre></pre></details>
+              </div>
+              <div data-topic-view="pose" hidden>
+                <h4>Pose feedback</h4>
+                <p id="pose-summary">Waiting for a pose message…</p>
+                <details id="pose-details" hidden><summary>Pose JSON</summary><pre></pre></details>
+              </div>
+              <div data-topic-view="color_sensor" hidden>
+                <h4>Color under the turtle</h4>
+                <p id="sensor-summary">Waiting for a color sensor message…</p>
+                <details id="sensor-details" hidden><summary>Color sensor JSON</summary><pre></pre></details>
+              </div>
+            </div>
+          </section>
+        </div>
+        <fieldset id="drive-tools" class="lesson-tools drive-section" disabled>
+          <legend>Drive controls</legend>
+          <p class="exercise">Hold a key or button to move. Release to stop.</p>
+          <div class="drive-layout">
+            <div class="drive-buttons">
+              <button id="forward" data-motion="1,0,0" aria-label="Forward" aria-keyshortcuts="ArrowUp" type="button"><kbd>↑</kbd> Forward</button>
+              <button id="left" data-motion="0,0,1.5" aria-label="Turn left" aria-keyshortcuts="ArrowLeft" type="button"><kbd>←</kbd> Turn left</button>
+              <button id="stop" class="primary" type="button">Stop</button>
+              <button id="right" data-motion="0,0,-1.5" aria-label="Turn right" aria-keyshortcuts="ArrowRight" type="button"><kbd>→</kbd> Turn right</button>
+              <button id="reverse" data-motion="-1,0,0" aria-label="Reverse" aria-keyshortcuts="ArrowDown" type="button"><kbd>↓</kbd> Reverse</button>
+            </div>
+            <div class="strafe-controls">
+              <h3>Strafe</h3>
+              <div class="strafe-buttons">
+                <button id="strafe-left" data-motion="0,1,0" aria-label="Strafe left" aria-keyshortcuts="Q" type="button" disabled><kbd>Q</kbd> Left</button>
+                <button id="strafe-right" data-motion="0,-1,0" aria-label="Strafe right" aria-keyshortcuts="E" type="button" disabled><kbd>E</kbd> Right</button>
+              </div>
+              <p id="strafe-hint" class="exercise">Enable holonomic in Parameters to strafe.</p>
+            </div>
+          </div>
+        </fieldset>
+      </section>
+
+      <section class="lesson" role="tabpanel" id="services" aria-labelledby="services-tab" tabindex="0" hidden>
+        <h2>Send one request, receive one response</h2>
+        <p class="exercise">Choose a service, send a request, then check what ROS returns.</p>
+        <div class="service-layout">
+          <fieldset class="service-list" id="service-list">
+            <legend class="visually-hidden">Choose a service</legend>
+            <div role="group" aria-labelledby="drawing-services">
+              <h3 id="drawing-services">Drawing</h3>
+              <label><input type="radio" name="service" value="pen" checked><span>Set pen</span></label>
+              <label><input type="radio" name="service" value="clear"><span>Clear trails</span></label>
+            </div>
+            <div role="group" aria-labelledby="movement-services">
+              <h3 id="movement-services">Movement</h3>
+              <label><input type="radio" name="service" value="absolute"><span>Teleport absolute</span></label>
+              <label><input type="radio" name="service" value="relative"><span>Teleport relative</span></label>
+            </div>
+            <div role="group" aria-labelledby="world-services">
+              <h3 id="world-services">World</h3>
+              <label><input type="radio" name="service" value="spawn"><span>Spawn turtle</span></label>
+              <label><input type="radio" name="service" value="kill"><span>Remove turtle</span></label>
+              <label><input type="radio" name="service" value="reset"><span>Reset world</span></label>
+              <label><input type="radio" name="service" value="settings"><span>Apply settings</span></label>
+            </div>
+          </fieldset>
+          <fieldset id="service-tools" class="service-form" disabled>
+            <legend class="visually-hidden">Call the selected simulator service</legend>
+            <div data-service-form="pen" data-needs-turtle>
+              <h3>Set pen</h3>
+              <p class="endpoint"><code data-interface="set_pen">/turtle1/set_pen</code> · <code>turtlesim/srv/SetPen</code></p>
+              <p class="exercise">Choose a color and send the request. Then drive in Topics to see the new trail.</p>
+              <form id="pen" class="row">
+                <label>Pen color <input name="color" type="color" value="#b3b8ff"></label>
+                <label>Width <input name="width" type="number" min="1" max="255" value="3" required></label>
+                <label class="check"><input name="enabled" type="checkbox" checked> Draw trail</label>
+                <button>Set pen</button>
+              </form>
+            </div>
+            <div data-service-form="clear" hidden>
+              <h3>Clear trails</h3>
+              <p class="endpoint"><code>/clear</code> · <code>std_srvs/srv/Empty</code></p>
+              <p class="exercise">Erase the drawn trails. This request has no inputs.</p>
+              <div class="row"><button id="clear" type="button">Clear trails</button></div>
+            </div>
+            <div data-service-form="absolute" data-needs-turtle hidden>
+              <h3>Teleport absolute</h3>
+              <p class="endpoint"><code data-interface="teleport_absolute">/turtle1/teleport_absolute</code> · <code>turtlesim/srv/TeleportAbsolute</code></p>
+              <p class="exercise">Move the selected turtle to an exact position and heading.</p>
+              <form id="absolute" class="row">
+                <label>X <input name="x" type="number" step="any" value="5.5" required></label>
+                <label>Y <input name="y" type="number" step="any" value="5.5" required></label>
+                <label>Heading (rad) <input name="theta" type="number" step="any" value="0" required></label>
+                <button>Teleport absolute</button>
+              </form>
+            </div>
+            <div data-service-form="relative" data-needs-turtle hidden>
+              <h3>Teleport relative</h3>
+              <p class="endpoint"><code data-interface="teleport_relative">/turtle1/teleport_relative</code> · <code>turtlesim/srv/TeleportRelative</code></p>
+              <p class="exercise">Turn and move the selected turtle relative to its current pose.</p>
+              <form id="relative" class="row">
+                <label>Distance <input name="linear" type="number" step="any" value="1" required></label>
+                <label>Turn (rad) <input name="angular" type="number" step="any" value="0" required></label>
+                <button>Teleport relative</button>
+              </form>
+            </div>
+            <div data-service-form="spawn" hidden>
+              <h3>Spawn turtle</h3>
+              <p class="endpoint"><code>/spawn</code> · <code>turtlesim/srv/Spawn</code></p>
+              <p class="exercise">Add a turtle at the given pose. Leave the name blank to let ROS assign one.</p>
+              <form id="spawn" class="row">
+                <label>Name <input name="name" type="text" placeholder="Auto" maxlength="35" pattern="[A-Za-z_][A-Za-z0-9_]*"></label>
+                <label>X <input name="x" type="number" step="any" value="2" required></label>
+                <label>Y <input name="y" type="number" step="any" value="2" required></label>
+                <label>Heading (rad) <input name="theta" type="number" step="any" value="0" required></label>
+                <button>Spawn turtle</button>
+              </form>
+            </div>
+            <div data-service-form="kill" data-needs-turtle hidden>
+              <h3>Remove turtle</h3>
+              <p class="endpoint"><code>/kill</code> · <code>turtlesim/srv/Kill</code></p>
+              <p class="exercise">Send the selected turtle’s name to remove it.</p>
+              <div class="row"><button id="kill" type="button">Remove selected turtle</button></div>
+            </div>
+            <div data-service-form="reset" hidden>
+              <h3>Reset world</h3>
+              <p class="endpoint"><code>/reset</code> · <code>std_srvs/srv/Empty</code></p>
+              <p class="exercise">Clear the trails and replace the turtles with a single turtle at the center.</p>
+              <div class="row"><button id="reset" type="button">Reset world</button></div>
+            </div>
+            <div data-service-form="settings" hidden>
+              <h3>Apply settings</h3>
+              <p class="endpoint"><code>/turtlesim/set_parameters_atomically</code> · <code>rcl_interfaces/srv/SetParametersAtomically</code></p>
+              <p class="exercise">Set the background color and choose whether turtles can move sideways.</p>
+              <form id="settings" class="row">
+                <label>Background <input name="color" type="color" value="#4556ff"></label>
+                <label class="check"><input name="holonomic" type="checkbox"> Enable strafing</label>
+                <button>Apply settings</button>
+              </form>
+            </div>
+          </fieldset>
+        </div>
+        <section class="messages" aria-labelledby="service-messages">
+          <h3 id="service-messages">ROS messages</h3>
+          <p id="service-empty">Call a service to see its request and response.</p>
+          <div id="service-records"></div>
+        </section>
+      </section>
+
+      <section class="lesson" role="tabpanel" id="actions" aria-labelledby="actions-tab" tabindex="0" hidden>
+        <h2>Send a goal, watch progress, get a result</h2>
+        <p class="exercise">Select a turtle’s rotation action and send a goal. Watch the remaining angle, then try another goal and cancel it while it is turning.</p>
+        <div class="service-layout topic-layout">
+          <fieldset class="service-list topic-list" id="action-list" disabled>
+            <legend class="visually-hidden">Choose an action</legend>
+            <p class="exercise">Waiting for turtles…</p>
+          </fieldset>
+          <fieldset id="action-tools" class="service-form" disabled>
+            <legend class="visually-hidden">Send or cancel a rotation goal</legend>
+            <h3>Rotate to heading</h3>
+            <p class="endpoint"><code data-interface="rotate_absolute">/turtle1/rotate_absolute</code></p>
+            <form id="rotate" class="row">
+              <label>Goal heading (rad) <input name="theta" type="number" step="any" value="1.57" required></label>
+              <button>Send goal</button>
+              <button id="cancel" type="button" disabled>Cancel rotation</button>
+            </form>
+            <p id="active-action" class="endpoint" role="status" hidden></p>
+          </fieldset>
+        </div>
+        <section class="messages" aria-labelledby="action-messages">
+          <h3 id="action-messages">ROS messages</h3>
+          <p id="action-empty">Send a goal to see its feedback and result.</p>
+          <div id="action-records"></div>
+        </section>
+      </section>
+      <section class="lesson" role="tabpanel" id="parameters" aria-labelledby="parameters-tab" tabindex="0" hidden>
+        <h2>Read and change node settings</h2>
+        <p class="exercise">Choose a background channel and change its value to see the color update. Enable <code>holonomic</code> to try sideways movement in Topics.</p>
+        <div class="service-layout topic-layout">
+          <fieldset class="service-list topic-list" id="parameter-list" disabled>
+            <legend class="visually-hidden">Choose a turtlesim parameter</legend>
+            <p class="exercise">Waiting for turtlesim parameters…</p>
+          </fieldset>
+          <fieldset id="parameter-tools" class="service-form" disabled>
+            <legend class="visually-hidden">Edit the selected parameter</legend>
+            <h3 id="parameter-name">Select a parameter</h3>
+            <p id="parameter-current" class="endpoint"></p>
+            <p id="parameter-description" class="exercise"></p>
+            <form id="parameter-edit" class="row" hidden>
+              <label id="parameter-number-label">New value <input name="integer" type="number" min="0" max="255" step="1" required></label>
+              <label id="parameter-bool-label" class="check" hidden><input name="boolean" type="checkbox"> Enabled</label>
+              <button>Apply parameter</button>
+            </form>
+          </fieldset>
+        </div>
+        <section class="messages" aria-labelledby="parameter-messages">
+          <h3 id="parameter-messages">ROS messages</h3>
+          <p id="parameter-empty">Apply a parameter to inspect the request and response.</p>
+          <div id="parameter-records"></div>
+        </section>
+      </section>
+    </section>
+  </main>
+</body>
+</html>

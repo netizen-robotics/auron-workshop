@@ -1,0 +1,16 @@
+{
+  "name": "Auron Workshop ROS 2 Jazzy",
+  "build": { "dockerfile": "Dockerfile" },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "ubuntu",
+  "runArgs": ["-p", "127.0.0.1:6080:6080", "-p", "127.0.0.1:9090:9090"],
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python"],
+      "settings": {
+        "python.defaultInterpreterPath": "/opt/auron-venv/bin/python"
+      }
+    }
+  }
+}
