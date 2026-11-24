@@ -16,7 +16,7 @@ from mcp.client.stdio import stdio_client
 async def auron_tools(station, permit=None):
     # The client starts a local server and uses its standard input/output for MCP messages.
     repo_root = Path(__file__).resolve().parents[1]
-    args = ["-m", "gemma_mcp.auron_mcp", "--station", str(Path(station).resolve())]
+    args = ["-m", f"{__package__}.auron_mcp", "--station", str(Path(station).resolve())]
     if permit:
         args.extend(["--permit", permit])
     server = StdioServerParameters(command=sys.executable, args=args, cwd=repo_root)

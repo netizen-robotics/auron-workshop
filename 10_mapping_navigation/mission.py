@@ -1,5 +1,6 @@
 """Give Wednesday's Gemma agent a bounded mapping or navigation mission."""
 
+from importlib import import_module
 import asyncio
 import json
 import math
@@ -7,12 +8,14 @@ from queue import Empty, Queue
 from threading import Thread
 from time import monotonic
 
-from mapping_navigation.robot import Interrupted, remaining
-from gemma_mcp.agent import select_tool
-from gemma_mcp.gemma import MODEL, ask
 from mcp.server.fastmcp import FastMCP
 from mcp.shared.memory import create_connected_server_and_client_session
-from gemma_mcp.mcp_read import call
+
+from .robot import Interrupted, remaining
+
+agent = import_module("07_gemma_mcp.agent")
+gemma = import_module("07_gemma_mcp.gemma")
+mcp_read = import_module("07_gemma_mcp.mcp_read")
 
 
 def lidar_summary(scan, yaw_deg, frame):
@@ -169,7 +172,7 @@ async def choose(messages, model, tools, deadline, stopped, ask_model):
         return value
 
 
-async def run_mission(robot, mode, task, build_pose, model=MODEL, ask_model=ask):
+async def run_mission(robot, mode, task, build_pose, model=gemma.MODEL, ask_model=gemma.ask):
     robot.require_enabled()
     config = robot.station[mode]
     deadline = monotonic() + config["mission_s"]
@@ -184,7 +187,7 @@ async def run_mission(robot, mode, task, build_pose, model=MODEL, ask_model=ask)
             if monotonic() >= deadline:
                 reason = "time_limit"
                 break
-            observation = await call(session, "observe", {})
+            observation = await mcp_read.call(session, "observe", {})
             options = observation["allowed_moves" if mode == "mapping" else "remaining_checkpoints"]
             if not options:
                 reason = "no_clear_move" if mode == "mapping" else "checkpoints_complete"
@@ -203,7 +206,7 @@ async def run_mission(robot, mode, task, build_pose, model=MODEL, ask_model=ask)
             except TimeoutError:
                 reason = "time_limit"
                 break
-            selected = select_tool(reply) if isinstance(reply, dict) else None
+            selected = agent.select_tool(reply) if isinstance(reply, dict) else None
             if selected == ("finish", {}):
                 reason = "agent_finished"
                 break
@@ -213,7 +216,7 @@ async def run_mission(robot, mode, task, build_pose, model=MODEL, ask_model=ask)
             if tool != action or set(arguments) != {argument} or arguments[argument] not in options:
                 raise RuntimeError("Agent proposed a tool or argument outside this mission.")
             remaining(deadline, robot.stopped)
-            results.append(await call(session, tool, arguments))
+            results.append(await mcp_read.call(session, tool, arguments))
         if mode == "nav" and results and len(visited) == len(config["checkpoints"]):
             reason = "checkpoints_complete"
     return {"mode": mode, "ended": reason, "steps": len(results), "results": results}

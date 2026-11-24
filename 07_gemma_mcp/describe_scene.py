@@ -3,7 +3,7 @@
 import argparse
 
 # This CLI gives Gemma an image and prompt. It does not expose ROS tools.
-from gemma_mcp.gemma import MODEL, describe
+from .gemma import MODEL, describe
 
 
 if __name__ == "__main__":

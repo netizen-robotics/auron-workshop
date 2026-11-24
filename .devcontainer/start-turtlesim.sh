@@ -24,7 +24,7 @@ if [[ -S /tmp/.X11-unix/X99 ]]; then
 fi
 
 web_root="$(mktemp -d)"
-ln -s /usr/share/novnc/* "$lab_dir"/ros2_turtlesim/web/* "$web_root"
+ln -s /usr/share/novnc/* "$lab_dir"/03_ros2_turtlesim/web/* "$web_root"
 
 Xvfb "$DISPLAY" -screen 0 500x500x24 -nolisten tcp &
 processes+=("$!")

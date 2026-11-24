@@ -1,5 +1,6 @@
 """Shared Auron controls for the terminal and the Thursday MCP tools."""
 
+from importlib import import_module
 from collections.abc import Callable
 from contextlib import closing
 import json
@@ -9,8 +10,9 @@ import re
 from time import monotonic, sleep
 from uuid import uuid4
 
-from auron_robotics.auron import VELOCITY_TYPE, load_station, publish_twist, robot_clock, send
 from websocket import WebSocketException, WebSocketTimeoutException, create_connection
+
+auron = import_module("06_auron_robotics.auron")
 
 STATUS = "/robot_mode_status"
 SWITCH = "/switch_robot_mode"
@@ -29,7 +31,7 @@ class UnknownStop(RuntimeError):
 
 
 def station_profile(path):
-    station = load_station(path)
+    station = auron.load_station(path)
     for key, maximum in (("linear_m_s", 0.10), ("turn_rad_s", 0.35), ("pulse_s", 0.60)):
         value = station["mapping"][key]
         if type(value) not in (int, float) or not 0 < value <= maximum:
@@ -93,7 +95,7 @@ class Robot:
     def service(self, name, service_type, args, deadline):
         request_id = str(uuid4())
         with self.connect(deadline) as socket:
-            send(socket, op="call_service", service=name, type=service_type, id=request_id,
+            auron.send(socket, op="call_service", service=name, type=service_type, id=request_id,
                  args=args, timeout=remaining(deadline, self.stopped))
             response = packet(socket, deadline, self.stopped, lambda message:
                               message.get("id") == request_id and message.get("op") == "service_response")
@@ -108,15 +110,15 @@ class Robot:
             options = {}
             if topic == "/map":
                 options["qos"] = {"durability": "transient_local", "reliability": "reliable"}
-            send(socket, op="subscribe", topic=topic, queue_length=1, **options)
+            auron.send(socket, op="subscribe", topic=topic, queue_length=1, **options)
             return packet(socket, deadline, self.stopped, lambda message:
                           message.get("op") == "publish" and message.get("topic") == topic)["msg"]
 
     def status(self, deadline):
         deadline = min(deadline, monotonic() + 5)
         with self.connect(deadline) as socket:
-            clock = robot_clock(socket)
-            send(socket, op="subscribe", topic=STATUS, queue_length=1)
+            clock = auron.robot_clock(socket)
+            auron.send(socket, op="subscribe", topic=STATUS, queue_length=1)
 
             def fresh_status(message):
                 if message.get("op") != "publish" or message.get("topic") != STATUS:
@@ -174,7 +176,7 @@ class Robot:
             def cancel():
                 try:
                     socket.settimeout(1)
-                    send(socket, op="cancel_action_goal", id=goal_id, action=name)
+                    auron.send(socket, op="cancel_action_goal", id=goal_id, action=name)
                     result = packet(socket, monotonic() + 3, lambda: False,
                                     lambda msg: matching(msg, {"action_result"}))
                     if result.get("status") in TERMINAL and result.get("result") is True:
@@ -185,7 +187,7 @@ class Robot:
 
             try:
                 remaining(deadline, self.stopped)
-                send(socket, op="send_action_goal", id=goal_id, action=name,
+                auron.send(socket, op="send_action_goal", id=goal_id, action=name,
                      action_type=action_type, args=args, feedback=during is not None)
                 result = packet(socket, deadline, self.stopped, lambda msg:
                                 matching(msg, {"action_result", "action_feedback"}))
@@ -213,9 +215,9 @@ class Robot:
         self.require_enabled()
         if direction == "stop":
             with self.connect(deadline) as socket:
-                stamp = robot_clock(socket)
-                send(socket, op="advertise", topic=TELEOP, type=VELOCITY_TYPE)
-                publish_twist(socket, TELEOP, 0, 0, stamp())
+                stamp = auron.robot_clock(socket)
+                auron.send(socket, op="advertise", topic=TELEOP, type=auron.VELOCITY_TYPE)
+                auron.publish_twist(socket, TELEOP, 0, 0, stamp())
             return {"command": "stop", "zero_sent": True}
 
         config = self.station["mapping"]
@@ -231,17 +233,17 @@ class Robot:
             # Check mode again after the action becomes active.
             self.require_ready("mapping", deadline)
             with self.connect(deadline) as velocity:
-                stamp = robot_clock(velocity)
-                send(velocity, op="advertise", topic=TELEOP, type=VELOCITY_TYPE)
+                stamp = auron.robot_clock(velocity)
+                auron.send(velocity, op="advertise", topic=TELEOP, type=auron.VELOCITY_TYPE)
                 end = monotonic() + config["pulse_s"]
                 try:
                     while monotonic() < end:
                         velocity.settimeout(min(0.25, remaining(deadline, self.stopped)))
-                        publish_twist(velocity, TELEOP, linear, angular, stamp())
+                        auron.publish_twist(velocity, TELEOP, linear, angular, stamp())
                         sleep(min(0.05, max(0, end - monotonic())))
                 finally:
                     velocity.settimeout(0.5)
-                    publish_twist(velocity, TELEOP, 0, 0, stamp())
+                    auron.publish_twist(velocity, TELEOP, 0, 0, stamp())
 
         self.action(ASSIST, "nav2_msgs/action/AssistedTeleop",
                     {"time_allowance": {"sec": 10, "nanosec": 0}},

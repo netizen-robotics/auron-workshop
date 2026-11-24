@@ -2,7 +2,7 @@
 
 import math
 
-from mapping_navigation.workshop import main
+from .workshop import main
 
 
 def build_switch(mode, map_path):

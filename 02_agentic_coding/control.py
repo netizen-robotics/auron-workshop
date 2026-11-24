@@ -1,6 +1,7 @@
 """Convert a workshop movement request into a velocity command."""
 
 # Parse command-line arguments with https://docs.python.org/3/library/argparse.html
+from importlib import import_module
 import argparse
 import math
 
@@ -44,9 +45,9 @@ def main() -> None:
         print(f"linear.x={linear:.2f} angular.z={angular:.2f}")
         # The preview runs without ROS. Load the publisher only for the simulator exercise.
         if args.turtlesim:
-            from ros2_turtlesim.turtlesim_driver import send_pulse
+            turtlesim_driver = import_module("03_ros2_turtlesim.turtlesim_driver")
 
-            send_pulse(linear, angular)
+            turtlesim_driver.send_pulse(linear, angular)
     except (RuntimeError, ValueError) as error:
         parser.exit(1, f"{error}\n")
 

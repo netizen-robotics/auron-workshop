@@ -1,6 +1,6 @@
 """Fill in the tool selection step. The shared runner handles confirmation."""
 
-from gemma_mcp.agent import main
+from .agent import main
 
 
 def select_tool(reply):

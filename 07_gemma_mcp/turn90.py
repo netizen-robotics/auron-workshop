@@ -1,4 +1,5 @@
 """Supervised verification of Auron's guarded velocity-only 90 degree turn."""
+from importlib import import_module
 import argparse
 import asyncio
 from contextlib import closing
@@ -15,10 +16,11 @@ from mcp.client.stdio import stdio_client
 from mcp.server.fastmcp import FastMCP
 from websocket import create_connection, WebSocketTimeoutException
 
-from gemma_mcp.agent import TOOLS, select_tool
-from auron_robotics.auron import VELOCITY_TYPE, load_station, motion_plan, publish_twist, robot_clock, send, subscribe_once, topics
-from gemma_mcp.gemma import ask
-from gemma_mcp.mcp_read import call
+from .agent import TOOLS, select_tool
+from .gemma import ask
+from .mcp_read import call
+
+auron = import_module("06_auron_robotics.auron")
 
 
 def yaw(q):
@@ -32,19 +34,19 @@ def signed_delta(current, previous):
 
 
 def ready(station):
-    status = subscribe_once(station, "/robot_mode_status")
+    status = auron.subscribe_once(station, "/robot_mode_status")
     return status["state"] == "idle" and status["active_mode"] == status["requested_mode"] == "manual" and status["nav_ready"]
 
 
 def turn(station):
-    plan = motion_plan(station, "left")
+    plan = auron.motion_plan(station, "left")
     topic = plan["topic"]
-    if not ready(station) or topics(station).get(topic) != VELOCITY_TYPE:
+    if not ready(station) or auron.topics(station).get(topic) != auron.VELOCITY_TYPE:
         raise RuntimeError("Manual mode or TwistStamped input is unavailable.")
     with closing(create_connection(station["url"], timeout=2)) as socket:
-        stamp = robot_clock(socket)
-        send(socket, op="subscribe", topic="/odom", id="turn-odometry", queue_length=1)
-        send(socket, op="advertise", topic=topic, type=VELOCITY_TYPE)
+        stamp = auron.robot_clock(socket)
+        auron.send(socket, op="subscribe", topic="/odom", id="turn-odometry", queue_length=1)
+        auron.send(socket, op="advertise", topic=topic, type=auron.VELOCITY_TYPE)
         socket.settimeout(0.24)
         started = None
         deadline = monotonic() + 4
@@ -81,10 +83,10 @@ def turn(station):
                     reason = "odometry shows insufficient left progress"
                     break
                 rate = min(plan["angular_z_rad_s"], max(0.10, (goal - total) * 1.4))
-                publish_twist(socket, topic, 0.0, rate, stamp())
+                auron.publish_twist(socket, topic, 0.0, rate, stamp())
         finally:
             for _ in range(3):
-                publish_twist(socket, topic, 0.0, 0.0, stamp())
+                auron.publish_twist(socket, topic, 0.0, 0.0, stamp())
                 sleep(0.06)
         return {"reason": reason, "heading_change_before_stop_deg": degrees(total), "zero_sent": True}
 
@@ -109,13 +111,13 @@ async def run(profile):
     proposal = select_tool(ask([{"role":"user","content":"Turn left"}], tools=TOOLS))
     if proposal != ("move_auron", {"command":"left"}):
         raise RuntimeError(f"Unexpected Gemma proposal: {proposal}")
-    station = load_station(profile)
-    plan = motion_plan(station,"left")
+    station = auron.load_station(profile)
+    plan = auron.motion_plan(station,"left")
     print(json.dumps({**plan, "seconds": None, "target_deg": 90, "timeout_s": 14},indent=2))
     if input("Full turn area clear and spotter ready with the independent stop? Enter TURN90: ") != "TURN90":
         return
     args = StdioServerParameters(command=sys.executable,
-        args=["-m", "gemma_mcp.turn90", str(Path(profile).resolve()), "--serve"],
+        args=["-m", f"{__package__}.turn90", str(Path(profile).resolve()), "--serve"],
         cwd=Path(__file__).resolve().parents[1])
     async with stdio_client(args) as (reader, writer):
         async with ClientSession(reader, writer) as session:
@@ -129,6 +131,6 @@ if __name__ == "__main__":
     p.add_argument("--serve",action="store_true")
     a = p.parse_args()
     if a.serve:
-        serve(load_station(a.profile))
+        serve(auron.load_station(a.profile))
     else:
         asyncio.run(run(a.profile))

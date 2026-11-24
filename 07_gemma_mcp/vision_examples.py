@@ -3,7 +3,7 @@
 import argparse
 
 # Both prompts use Ollama vision without ROS access: https://docs.ollama.com/capabilities/vision
-from gemma_mcp.gemma import MODEL, ask_about_images
+from .gemma import MODEL, ask_about_images
 
 COMPARE = (
     "The first image is BEFORE and the second image is AFTER. From the camera images alone, "

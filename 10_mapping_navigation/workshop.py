@@ -1,5 +1,6 @@
 """Command-line entry point shared by the student and reference programs."""
 
+from importlib import import_module
 import argparse
 import asyncio
 import json
@@ -7,10 +8,12 @@ import signal
 from threading import Event
 from time import monotonic
 
-from mapping_navigation.robot import Robot, station_profile
-from gemma_mcp.gemma import MODEL
-from mapping_navigation.mission import run_mission
 from websocket import WebSocketException
+
+from .mission import run_mission
+from .robot import Robot, station_profile
+
+gemma = import_module("07_gemma_mcp.gemma")
 
 KEYS = {"w": "forward", "a": "left", "d": "right", "s": "stop"}
 
@@ -44,7 +47,7 @@ def main(build_switch, build_pose):
     agent = commands.add_parser("agent")
     agent.add_argument("mode", choices=("mapping", "nav"))
     agent.add_argument("task")
-    agent.add_argument("--model", default=MODEL)
+    agent.add_argument("--model", default=gemma.MODEL)
     args = parser.parse_args()
     stopped = Event()
     # Let an active action finish cancellation before tearing down its socket.

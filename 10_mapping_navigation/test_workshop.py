@@ -11,9 +11,10 @@ from time import monotonic
 import unittest
 from unittest.mock import Mock, patch
 
-from mapping_navigation.robot import ASSIST, NAVIGATE, STATUS, SWITCH, Robot, UnknownStop, reference_pose, reference_switch
-from mapping_navigation.mission import lidar_summary, run_mission
-from mapping_navigation.workshop import describe_error
+from . import mission, robot
+from .robot import ASSIST, NAVIGATE, STATUS, SWITCH, Robot, UnknownStop, reference_pose, reference_switch
+from .mission import lidar_summary, run_mission
+from .workshop import describe_error
 from websocket import WebSocketConnectionClosedException
 
 EXAMPLE = json.loads(Path(__file__).with_name("station.example.json").read_text())
@@ -88,7 +89,7 @@ class RobotTests(unittest.TestCase):
         socket = Mock()
         socket.recv.side_effect = map(json.dumps, [message(96), message(100)])
         self.robot.connect = Mock(return_value=nullcontext(socket))
-        with patch("mapping_navigation.robot.robot_clock", return_value=lambda: {"sec": 100, "nanosec": 0}):
+        with patch.object(robot.auron, "robot_clock", return_value=lambda: {"sec": 100, "nanosec": 0}):
             self.assertEqual(self.robot.status(monotonic() + 1)["stamp"]["sec"], 100)
 
     def test_assisted_pulse_sends_zero_and_cancels(self):
@@ -97,7 +98,7 @@ class RobotTests(unittest.TestCase):
         self.robot.connect = Mock(side_effect=[nullcontext(action), nullcontext(velocity)])
         self.robot.status = Mock(return_value=READY)
         self.robot.station["mapping"]["pulse_s"] = 0.001
-        with patch("mapping_navigation.robot.robot_clock", return_value=lambda: {"sec": 1, "nanosec": 0}):
+        with patch.object(robot.auron, "robot_clock", return_value=lambda: {"sec": 1, "nanosec": 0}):
             self.assertTrue(self.robot.drive("right", monotonic() + 1)["zero_sent"])
         self.assertEqual(action.sent[0]["action"], ASSIST)
         wire = [json.loads(record.args[0]) for record in velocity.send.call_args_list]
@@ -151,7 +152,7 @@ class RobotTests(unittest.TestCase):
     def test_goal_timeout_requests_cancellation(self):
         socket = Socket({"op": "action_result", "status": 5, "result": True})
         self.robot.connect = Mock(return_value=nullcontext(socket))
-        with patch("mapping_navigation.robot.packet", side_effect=[TimeoutError("goal timed out"),
+        with patch.object(robot, "packet", side_effect=[TimeoutError("goal timed out"),
                                                 {"status": 5, "result": True}]):
             with self.assertRaisesRegex(TimeoutError, "goal timed out"):
                 self.robot.action(NAVIGATE, "nav", {}, monotonic() + 1)
@@ -209,7 +210,7 @@ class MissionTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((result["ended"], result["steps"]), ("step_limit", 1))
 
     async def test_timeout_blocks_dispatch(self):
-        with patch("mapping_navigation.mission.choose", side_effect=TimeoutError):
+        with patch.object(mission, "choose", side_effect=TimeoutError):
             result = await self.run_agent("mapping", choose("mapping_move", direction="forward"))
         self.assertEqual((result["ended"], result["steps"]), ("time_limit", 0))
         self.robot.drive.assert_not_called()

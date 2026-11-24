@@ -1,12 +1,14 @@
 """Reference solution for a local Gemma 4 agent with one reviewed MCP tool call."""
 
+from importlib import import_module
 import argparse
 import asyncio
 import re
 
-from auron_robotics.auron import confirmed, load_station, motion_plan
-from gemma_mcp.gemma import MODEL, ask
-from gemma_mcp.mcp_read import auron_tools, call
+from .gemma import MODEL, ask
+from .mcp_read import auron_tools, call
+
+auron = import_module("06_auron_robotics.auron")
 
 CONTROL_REQUESTS = {"move forward": "forward", "turn left": "left", "stop": "stop"}
 # These schemas tell Ollama which tool names and arguments the model may propose.
@@ -39,7 +41,7 @@ def select_tool(reply):
 
 
 async def run(station_path, model, request, choose_tool):
-    station = load_station(station_path)
+    station = auron.load_station(station_path)
     messages = [
         {"role": "system", "content": "You assist beginners with physical Auron. Use one tool at most. "
          "Read live data for current sensor questions. Propose movement only for an explicit "
@@ -66,7 +68,7 @@ async def run(station_path, model, request, choose_tool):
         return
 
     print("Proposed MCP tool: move_auron")
-    if not confirmed(motion_plan(station, command)):
+    if not auron.confirmed(auron.motion_plan(station, command)):
         print("Cancelled. No movement sent.")
         return
     # This server process accepts just the reviewed movement preset for one call.

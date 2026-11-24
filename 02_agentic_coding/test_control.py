@@ -1,7 +1,7 @@
 # unittest compares actual outputs with expected values: https://docs.python.org/3/library/unittest.html
 import unittest
 
-from agentic_coding.control import clamp_speed, velocity_for
+from .control import clamp_speed, velocity_for
 
 
 class SpeedLimitTests(unittest.TestCase):
