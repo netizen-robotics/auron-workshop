@@ -1,0 +1,24 @@
+{
+  "url": "ws://AURON_IP:9090",
+  "enabled": false,
+  "mapping": {
+    "linear_m_s": 0.08,
+    "turn_rad_s": 0.3,
+    "pulse_s": 0.6,
+    "scan_frame": "laser_link",
+    "scan_yaw_deg": 0,
+    "front_clearance_m": 0.55,
+    "turn_clearance_m": 0.35,
+    "max_steps": 12,
+    "mission_s": 120
+  },
+  "nav": {
+    "map_path": "/share/auron/team-03-practice.yaml",
+    "checkpoints": {
+      "A": {"x": 0.6, "y": 0.0, "yaw_deg": 0},
+      "B": {"x": 0.9, "y": 0.3, "yaw_deg": 90}
+    },
+    "max_steps": 2,
+    "mission_s": 100
+  }
+}

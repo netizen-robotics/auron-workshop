@@ -13,3 +13,6 @@ station.json
 auron-rgb*.jpg
 before.jpg
 after.jpg
+
+# Local Thursday station files
+*.station.json
