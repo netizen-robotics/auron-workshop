@@ -45,7 +45,7 @@ def main() -> None:
         print(f"linear.x={linear:.2f} angular.z={angular:.2f}")
         # The preview runs without ROS. Load the publisher only for the simulator exercise.
         if args.turtlesim:
-            turtlesim_driver = import_module("03_ros2_turtlesim.turtlesim_driver")
+            turtlesim_driver = import_module("05_turtlesim_python.turtlesim_driver")
 
             turtlesim_driver.send_pulse(linear, angular)
     except (RuntimeError, ValueError) as error:
