@@ -34,7 +34,7 @@ uv venv --python 3.12
 uv pip install -r requirements.txt
 ```
 
-Activate `.venv` with `source .venv/bin/activate` on macOS or Linux, or `.venv\Scripts\Activate.ps1` in PowerShell. From the checkout root, copy [station.example.json](06_auron_robotics/station.example.json) to `station.json`. Use the instructor's rosbridge URL and the topic names verified at your station. Ask the instructor to prepare the station configuration before enabling movement. The Thursday guide uses its own station file with the same Python environment.
+Activate `.venv` with `source .venv/bin/activate` on macOS or Linux, or `.venv\Scripts\Activate.ps1` in PowerShell. From the checkout root, copy [station.example.json](04_auron_robotics/station.example.json) to `station.json`. Use the instructor's rosbridge URL and the topic names verified at your station. Ask the instructor to prepare the station configuration before enabling movement. The Thursday guide uses its own station file with the same Python environment.
 
 ## Topics
 
@@ -45,14 +45,14 @@ Activate `.venv` with `source .venv/bin/activate` on macOS or Linux, or `.venv\S
 | [03 · ROS 2 Basic Concepts](03_ros2_turtlesim/README.md#03--ros-2-basic-concepts) | Tuesday 17–23 |
 | [04 · Turtlesim Web Lab](03_ros2_turtlesim/README.md#04--turtlesim-web-lab) | Tuesday 24–31 |
 | [05 · Control Turtlesim with Python](03_ros2_turtlesim/README.md#05--control-turtlesim-with-python) | Tuesday 32–36 |
-| [06 · Robot Control and Sensing](06_auron_robotics/README.md#06--robot-control-and-sensing) | Wednesday 3–8 |
-| [07 · Connect Auron to ROS MCP](07_gemma_mcp/README.md#07--connect-auron-to-ros-mcp) | Wednesday 9–12 |
-| [08 · LLMs, Ollama and Gemma 4](07_gemma_mcp/README.md#08--llms-ollama-and-gemma-4) | Wednesday 13–16 |
-| [09 · Build a Python Agent](07_gemma_mcp/README.md#09--build-a-python-agent) | Wednesday 17–25 |
-| [10 · Map and Navigate in the Dashboard](10_mapping_navigation/README.md#10--map-and-navigate-in-the-dashboard) | Thursday 45 |
-| [11 · Switch Modes and Drive in SLAM](10_mapping_navigation/README.md#11--switch-modes-and-drive-in-slam) | Thursday 46–47 |
-| [12 · Program and Send a Nav2 Goal](10_mapping_navigation/README.md#12--program-and-send-a-nav2-goal) | Thursday 48 |
-| [13 · Run Autonomous SLAM and Navigation Missions](10_mapping_navigation/README.md#13--run-autonomous-slam-and-navigation-missions) | Thursday 49–50 |
+| [06 · Robot Control and Sensing](04_auron_robotics/README.md#06--robot-control-and-sensing) | Wednesday 3–8 |
+| [07 · Connect Auron to ROS MCP](05_gemma_mcp/README.md#07--connect-auron-to-ros-mcp) | Wednesday 9–12 |
+| [08 · LLMs, Ollama and Gemma 4](05_gemma_mcp/README.md#08--llms-ollama-and-gemma-4) | Wednesday 13–16 |
+| [09 · Build a Python Agent](05_gemma_mcp/README.md#09--build-a-python-agent) | Wednesday 17–25 |
+| [10 · Map and Navigate in the Dashboard](06_mapping_navigation/README.md#10--map-and-navigate-in-the-dashboard) | Thursday 45 |
+| [11 · Switch Modes and Drive in SLAM](06_mapping_navigation/README.md#11--switch-modes-and-drive-in-slam) | Thursday 46–47 |
+| [12 · Program and Send a Nav2 Goal](06_mapping_navigation/README.md#12--program-and-send-a-nav2-goal) | Thursday 48 |
+| [13 · Run Autonomous SLAM and Navigation Missions](06_mapping_navigation/README.md#13--run-autonomous-slam-and-navigation-missions) | Thursday 49–50 |
 
 ## 01 · Python Fundamentals
 
@@ -76,23 +76,23 @@ Subscribe to pose, send a bounded pulse and drive a route in turtlesim. [Open th
 
 ## 06 · Robot Control and Sensing
 
-Read sensor values, capture an RGB frame and practise supervised velocity control. [Open the guide](06_auron_robotics/README.md#06--robot-control-and-sensing).
+Read sensor values, capture an RGB frame and practise supervised velocity control. [Open the guide](04_auron_robotics/README.md#06--robot-control-and-sensing).
 
 ## 07 · Connect Auron to ROS MCP
 
-Discover tools and read a live sensor through MCP. [Open the guide](07_gemma_mcp/README.md#07--connect-auron-to-ros-mcp).
+Discover tools and read a live sensor through MCP. [Open the guide](05_gemma_mcp/README.md#07--connect-auron-to-ros-mcp).
 
 ## 08 · LLMs, Ollama and Gemma 4
 
-Run Gemma 4 locally and see when it needs live robot data. [Open the guide](07_gemma_mcp/README.md#08--llms-ollama-and-gemma-4).
+Run Gemma 4 locally and see when it needs live robot data. [Open the guide](05_gemma_mcp/README.md#08--llms-ollama-and-gemma-4).
 
 ## 09 · Build a Python Agent
 
-Complete the tool-selection starter and compare camera images with odometry. [Open the guide](07_gemma_mcp/README.md#09--build-a-python-agent).
+Complete the tool-selection starter and compare camera images with odometry. [Open the guide](05_gemma_mcp/README.md#09--build-a-python-agent).
 
 ## 10–13 · Mapping, Navigation and Autonomous Agents
 
-Map with the dashboard, switch robot modes from Python, drive in SLAM with a terminal menu, and send a Nav2 goal. Then run both autonomous missions with the Wednesday agent tools. [Open the Thursday guide](10_mapping_navigation/README.md).
+Map with the dashboard, switch robot modes from Python, drive in SLAM with a terminal menu, and send a Nav2 goal. Then run both autonomous missions with the Wednesday agent tools. [Open the Thursday guide](06_mapping_navigation/README.md).
 
 ## Reference and troubleshooting
 

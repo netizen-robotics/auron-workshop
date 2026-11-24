@@ -7,7 +7,7 @@ from typing import Literal
 # FastMCP exposes Python functions as tools: https://github.com/modelcontextprotocol/python-sdk
 from mcp.server.fastmcp import FastMCP
 
-auron = import_module("06_auron_robotics.auron")
+auron = import_module("04_auron_robotics.auron")
 
 
 def main():

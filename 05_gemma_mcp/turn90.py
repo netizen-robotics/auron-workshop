@@ -20,7 +20,7 @@ from .agent import TOOLS, select_tool
 from .gemma import ask
 from .mcp_read import call
 
-auron = import_module("06_auron_robotics.auron")
+auron = import_module("04_auron_robotics.auron")
 
 
 def yaw(q):

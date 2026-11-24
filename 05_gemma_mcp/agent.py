@@ -8,7 +8,7 @@ import re
 from .gemma import MODEL, ask
 from .mcp_read import auron_tools, call
 
-auron = import_module("06_auron_robotics.auron")
+auron = import_module("04_auron_robotics.auron")
 
 CONTROL_REQUESTS = {"move forward": "forward", "turn left": "left", "stop": "stop"}
 # These schemas tell Ollama which tool names and arguments the model may propose.

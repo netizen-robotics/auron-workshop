@@ -13,9 +13,9 @@ from mcp.shared.memory import create_connected_server_and_client_session
 
 from .robot import Interrupted, remaining
 
-agent = import_module("07_gemma_mcp.agent")
-gemma = import_module("07_gemma_mcp.gemma")
-mcp_read = import_module("07_gemma_mcp.mcp_read")
+agent = import_module("05_gemma_mcp.agent")
+gemma = import_module("05_gemma_mcp.gemma")
+mcp_read = import_module("05_gemma_mcp.mcp_read")
 
 
 def lidar_summary(scan, yaw_deg, frame):

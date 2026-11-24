@@ -13,7 +13,7 @@ from websocket import WebSocketException
 from .mission import run_mission
 from .robot import Robot, station_profile
 
-gemma = import_module("07_gemma_mcp.gemma")
+gemma = import_module("05_gemma_mcp.gemma")
 
 KEYS = {"w": "forward", "a": "left", "d": "right", "s": "stop"}
 

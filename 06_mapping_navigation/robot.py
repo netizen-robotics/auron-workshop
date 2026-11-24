@@ -12,7 +12,7 @@ from uuid import uuid4
 
 from websocket import WebSocketException, WebSocketTimeoutException, create_connection
 
-auron = import_module("06_auron_robotics.auron")
+auron = import_module("04_auron_robotics.auron")
 
 STATUS = "/robot_mode_status"
 SWITCH = "/switch_robot_mode"
