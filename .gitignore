@@ -7,3 +7,9 @@ __pycache__/
 *.pptx
 *.pem
 *.key
+.venv/
+__pycache__/
+station.json
+auron-rgb*.jpg
+before.jpg
+after.jpg

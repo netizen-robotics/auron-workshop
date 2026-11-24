@@ -24,7 +24,7 @@ if [[ -S /tmp/.X11-unix/X99 ]]; then
 fi
 
 web_root="$(mktemp -d)"
-ln -s /usr/share/novnc/* "$lab_dir"/web/* "$web_root"
+ln -s /usr/share/novnc/* "$lab_dir"/ros2_turtlesim/web/* "$web_root"
 
 Xvfb "$DISPLAY" -screen 0 500x500x24 -nolisten tcp &
 processes+=("$!")
@@ -34,6 +34,8 @@ for attempt in {1..50}; do
 done
 [[ -S /tmp/.X11-unix/X99 ]] || { printf 'The simulator display did not start.\n' >&2; exit 1; }
 
+# noVNC and websockify: https://github.com/novnc/noVNC
+# noVNC streams the shared simulator display. ROS messages use the separate bridge below.
 x11vnc -display "$DISPLAY" -localhost -rfbport 5900 -nopw -forever -shared -quiet &
 processes+=("$!")
 websockify --web "$web_root" 6080 127.0.0.1:5900 &

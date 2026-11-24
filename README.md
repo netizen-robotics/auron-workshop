@@ -1,12 +1,12 @@
-# Auron Workshop · Tuesday lab
+# Auron Workshop
 
-Wednesday participants can open the [Physical Auron and Gemma 4 lab](wednesday/README.md).
-
-Learn Python, review a change in OpenCode Desktop, and control ROS 2 Jazzy turtlesim. Edit the same Git folder in VS Code and OpenCode Desktop. Run the commands in the VS Code Dev Container terminal.
+Follow Topics 01–05 on Tuesday and Topics 06–09 on Wednesday. The slide ranges match the workshop decks.
 
 ## Get set up once
 
-1. Install and start Docker Desktop (or Docker Engine on Linux). Run `docker version` in a host terminal and check for a **Server** section. [Docker setup](https://docs.docker.com/get-docker/)
+### Dev Container for Topics 01–05
+
+1. Install [Git](https://git-scm.com/downloads). Install and start Docker Desktop (or Docker Engine on Linux). Run `docker version` in a host terminal and check for a **Server** section. [Docker setup](https://docs.docker.com/get-docker/)
 2. Install VS Code, its **Dev Containers** extension, and OpenCode Desktop. [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers) · [OpenCode Desktop](https://opencode.ai/download)
 3. Clone the repository. Open the cloned folder in VS Code and choose **Dev Containers: Reopen in Container**. Allow time for the first image download. The Dev Container pulls the versioned [runtime image](https://gallery.ecr.aws/netizen-robotics/auron-workshop) from Amazon ECR Public. Docker selects AMD64 or ARM64 automatically. Participants can pull it without an AWS account.
 
@@ -25,94 +25,70 @@ Learn Python, review a change in OpenCode Desktop, and control ROS 2 Jazzy turtl
 
    Expect `jazzy` and `/opt/auron-venv/bin/python`. Files you edit are saved in the cloned folder on your laptop.
 
-## 1. Run three small Python programs
+### Host Python for Topics 06–09
 
-Predict the output, run each program, then edit one value and run it again.
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and open the workshop checkout in your editor. Run these commands in a **host terminal**. This lab connects to the robot through its existing rosbridge.
 
-| Run | Expected output | Change to try |
-| --- | --- | --- |
-| `python examples/python/velocity_values.py` | `Predicted distance: 0.80 units` | Change `seconds` to `3.0`. |
-| `python examples/python/movement_conditions.py` | `reverse: linear velocity = -0.30` | Change `movement` to `"forward"`. |
-| `python examples/python/route_functions.py` | `forward for 1.0 s`, `left for 0.5 s`, `forward for 1.0 s`, `Total: 2.5 s` | Add a right turn to the end of `route`. |
-
-## 2. Practise agentic coding with OpenCode Desktop
-
-OpenCode can inspect the project and edit its files. Review the plan and changes, then run the tests to verify the result.
-
-1. Run the previews and tests in the VS Code Dev Container. Predict the correct signed speeds given a limit of `0.50`.
-
-   ```bash
-   python control.py forward 0.8
-   python control.py reverse 0.8
-   python -m unittest -v
-   ```
-
-   Expect `0.80` and `-0.80` in the starter previews, and two failures, `test_forward_above_limit` and `test_reverse_above_limit`.
-
-2. Open the cloned folder in **OpenCode Desktop**. Choose **Plan** mode and ask:
-
-   > Read control.py and test_control.py. Explain the two failing tests. Plan a change to clamp_speed that uses its supplied limit and preserves the sign. Keep the tests unchanged. Wait for review.
-
-3. Review the plan, apply the edit with **Build**, and review the diff with `git diff -- control.py`. Rerun all three commands. Expect eight passing tests and previews with `0.50` and `-0.50`. These previews only print commands.
-4. If you need to catch up, use the [reference implementation](solutions/clamp_speed.py) to replace just the `clamp_speed` function in `control.py`, then rerun the tests.
-
-## 3. Connect the ROS 2 concepts in the browser
-
-A node is one participant in ROS. The browser uses a WebSocket to talk to the rosbridge node, which exchanges ROS messages with the turtlesim node. A velocity command on `/turtle1/cmd_vel` asks for movement. Pose feedback on `/turtle1/pose` reports the position and heading the simulator observed.
-
-Start the simulator in the Dev Container, and leave this terminal running.
-
-```bash
-bash .devcontainer/start-turtlesim.sh
+```text
+uv venv --python 3.12
+uv pip install -r requirements.txt
 ```
 
-Open [Turtlesim Web Lab](http://localhost:6080/) in your laptop's browser. Wait for **Connected to local rosbridge** and select **turtle1**.
+Activate `.venv` with `source .venv/bin/activate` on macOS or Linux, or `.venv\Scripts\Activate.ps1` in PowerShell. From the checkout root, copy [station.example.json](auron_robotics/station.example.json) to `station.json`. Use the instructor's rosbridge URL and the topic names verified at your station. Ask the instructor to prepare the station configuration before enabling movement.
 
-| Tab | Try this | Observe |
-| --- | --- | --- |
-| **Topics** | Select `cmd_vel`, hold **Forward** or ↑, then release. Select `pose`. | Compare `linear.x` during movement and on release with the new pose `x`. The topic list shows the message types and directions. |
-| **Services** | Choose **Set pen**, apply a new color, then drive. | Compare the request with its response, and check the trail color. |
-| **Actions** | Send a `rotate_absolute` goal at 1.57 rad. When it completes, try −1.5 rad and select **Cancel rotation** while turning. | Compare feedback during rotation with the final results. |
-| **Parameters** | Change one background channel to a different integer from 0 to 255. Then restore the original value. | Compare the value, type, response, and visible background. |
+## Topics
 
-For more practice, inspect `color_sensor` while crossing a trail or enable `holonomic` in Parameters and try **Q** and **E** to strafe in Topics.
+| Topic | Workshop slides |
+| --- | --- |
+| [01 · Python Fundamentals](python_fundamentals/README.md#01--python-fundamentals) | Tuesday 5–8 |
+| [02 · Agentic Coding with OpenCode Desktop](agentic_coding/README.md#02--agentic-coding-with-opencode-desktop) | Tuesday 9–16 |
+| [03 · ROS 2 Basic Concepts](ros2_turtlesim/README.md#03--ros-2-basic-concepts) | Tuesday 17–23 |
+| [04 · Turtlesim Web Lab](ros2_turtlesim/README.md#04--turtlesim-web-lab) | Tuesday 24–31 |
+| [05 · Control Turtlesim with Python](ros2_turtlesim/README.md#05--control-turtlesim-with-python) | Tuesday 32–36 |
+| [06 · Robot Control and Sensing](auron_robotics/README.md#06--robot-control-and-sensing) | Wednesday 3–8 |
+| [07 · Connect Auron to ROS MCP](gemma_mcp/README.md#07--connect-auron-to-ros-mcp) | Wednesday 9–12 |
+| [08 · LLMs, Ollama and Gemma 4](gemma_mcp/README.md#08--llms-ollama-and-gemma-4) | Wednesday 13–16 |
+| [09 · Build a Python Agent](gemma_mcp/README.md#09--build-a-python-agent) | Wednesday 17–25 |
 
-## 4. Control turtlesim with Python
+## 01 · Python Fundamentals
 
-Keep the browser open on `turtle1`. Use a **second** Dev Container terminal.
+Predict and run three small Python programs. [Open the guide](python_fundamentals/README.md#01--python-fundamentals).
 
-1. Run a native `rclpy` subscriber. In [read_turtle_pose.py](examples/ros/read_turtle_pose.py), find the topic, message type, and callback. Compare output with the browser pose.
+## 02 · Agentic Coding with OpenCode Desktop
 
-   ```bash
-   python -m examples.ros.read_turtle_pose
-   ```
+Review a plan and diff, then verify a signed-speed clamp with eight tests. [Open the guide](agentic_coding/README.md#02--agentic-coding-with-opencode-desktop).
 
-2. Select `cmd_vel` in the browser. Publish a bounded movement pulse. The driver repeats the command briefly, then sends zero. Compare the live velocity stream and `pose` afterwards.
+## 03 · ROS 2 Basic Concepts
 
-   ```bash
-   python control.py forward 0.3 --turtlesim
-   ```
+Identify nodes and follow commands and feedback through ROS. [Open the guide](ros2_turtlesim/README.md#03--ros-2-basic-concepts).
 
-3. Predict the path of one forward pulse, one left turn, and a second forward pulse. Read pose before and after. Try the route near the middle of the canvas with room to move.
+## 04 · Turtlesim Web Lab
 
-   ```bash
-   python -m examples.ros.read_turtle_pose
-   python -m examples.ros.drive_sequence
-   python -m examples.ros.read_turtle_pose
-   ```
+Inspect topics, services, actions and parameters in the browser. [Open the guide](ros2_turtlesim/README.md#04--turtlesim-web-lab).
 
-4. Finish with the read-only rosbridge client. Read the same turtle pose through the WebSocket. From the workshop network, use the instructor-supplied Auron address to read odometry while the robot is stationary.
+## 05 · Control Turtlesim with Python
 
-   ```bash
-   python read_pose.py turtle --url ws://127.0.0.1:9090
-   python read_pose.py auron --url ws://AURON_IP:9090
-   ```
+Subscribe to pose, send a bounded pulse and drive a route in turtlesim. [Open the guide](ros2_turtlesim/README.md#05--control-turtlesim-with-python).
 
-   Compare `turtlesim/msg/Pose` (`x`, `y`, `theta`) with `nav_msgs/msg/Odometry` (position, yaw derived from a quaternion, and frame names). Use `--topic` if the instructor supplies a namespaced odometry topic. The movement examples target local turtlesim only.
+## 06 · Robot Control and Sensing
+
+Read sensor values, capture an RGB frame and practise supervised velocity control. [Open the guide](auron_robotics/README.md#06--robot-control-and-sensing).
+
+## 07 · Connect Auron to ROS MCP
+
+Discover tools and read a live sensor through MCP. [Open the guide](gemma_mcp/README.md#07--connect-auron-to-ros-mcp).
+
+## 08 · LLMs, Ollama and Gemma 4
+
+Run Gemma 4 locally and see when it needs live robot data. [Open the guide](gemma_mcp/README.md#08--llms-ollama-and-gemma-4).
+
+## 09 · Build a Python Agent
+
+Complete the tool-selection starter and compare camera images with odometry. [Open the guide](gemma_mcp/README.md#09--build-a-python-agent).
 
 ## Reference and troubleshooting
 
 - The Dev Container supplies Python, ROS 2 Jazzy, turtlesim, rosbridge, Nav2, and SLAM Toolbox. Inspect the navigation and mapping interfaces with `ros2 interface show nav2_msgs/action/NavigateToPose` and `ros2 interface show slam_toolbox/srv/SaveMap`.
 - Run `ros2 node list` and `ros2 topic list` to inspect the ROS graph while turtlesim runs. The local simulator needs ports 6080 and 9090 available on the laptop. If the browser loses its connection, check the startup terminal.
-- Reuse this Dev Container and the tested clamp on Wednesday. The instructor provides the Wednesday ROS MCP guide.
+- Wednesday uses the host Python environment to connect to the assigned robot.
 - Maintainers can rebuild the runtime from [the Dockerfile](.devcontainer/Dockerfile) with `docker build -t auron-workshop:local .devcontainer`.
