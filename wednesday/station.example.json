@@ -1,0 +1,21 @@
+{
+  "url": "ws://AURON_IP:9090",
+  "sensors": {
+    "lidar": "/scan",
+    "imu": "/imu/calibrated",
+    "wheels": "/joint_states",
+    "battery": "/battery_level_broadcaster/battery_state",
+    "odometry": "/odom",
+    "depth": "/camera/depth/image_raw",
+    "rgb": "/camera/color/image_raw/compressed",
+    "camera_accel": "/camera/accel/sample",
+    "camera_gyro": "/camera/gyro/sample"
+  },
+  "motion": {
+    "enabled": false,
+    "topic": "/cmd_vel_teleop",
+    "forward_m_s": 0.05,
+    "turn_rad_s": 0.20,
+    "seconds": 0.40
+  }
+}

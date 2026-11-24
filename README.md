@@ -1,5 +1,7 @@
 # Auron Workshop · Tuesday lab
 
+Wednesday participants can open the [Physical Auron and Gemma 4 lab](wednesday/README.md).
+
 Learn Python, review a change in OpenCode Desktop, and control ROS 2 Jazzy turtlesim. Edit the same Git folder in VS Code and OpenCode Desktop. Run the commands in the VS Code Dev Container terminal.
 
 ## Get set up once

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "servers": {
+      "ros_mcp": {
+        "type": "local",
+        "command": [
+          "uvx", "--python", "3.12", "--from", "ros-mcp==3.1.2",
+          "ros-mcp", "--transport", "stdio"
+        ],
+        "codemode": false
+      }
+    }
+  },
+  "permissions": [
+    { "action": "*", "resource": "*", "effect": "deny" },
+    { "action": "ros_mcp_connect_to_robot", "resource": "*", "effect": "ask" },
+    { "action": "ros_mcp_get_nodes", "resource": "*", "effect": "allow" },
+    { "action": "ros_mcp_get_topics", "resource": "*", "effect": "allow" },
+    { "action": "ros_mcp_get_topic_type", "resource": "*", "effect": "allow" },
+    { "action": "ros_mcp_subscribe_once", "resource": "*", "effect": "allow" }
+  ]
+}
