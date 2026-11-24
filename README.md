@@ -34,7 +34,15 @@ uv venv --python 3.12
 uv pip install -r requirements.txt
 ```
 
-Activate `.venv` with `source .venv/bin/activate` on macOS or Linux, or `.venv\Scripts\Activate.ps1` in PowerShell. From the checkout root, copy [station.example.json](04_auron_robotics/station.example.json) to `station.json`. Use the instructor's rosbridge URL and the topic names verified at your station. Ask the instructor to prepare the station configuration before enabling movement. The Thursday guide uses its own station file with the same Python environment.
+Activate `.venv` with `source .venv/bin/activate` on macOS or Linux, or `.\.venv\Scripts\Activate.ps1` in PowerShell. For Wednesday, copy the [example station profile](04_auron_robotics/station.example.json) from the checkout root.
+
+```sh
+cp 04_auron_robotics/station.example.json station.json
+```
+
+In PowerShell, run `Copy-Item 04_auron_robotics/station.example.json station.json`.
+
+Use the instructor's rosbridge URL and the topic names verified at your station. Ask the instructor to prepare the station configuration before enabling movement. The Thursday guide uses its own station file with the same Python environment.
 
 ## Topics
 

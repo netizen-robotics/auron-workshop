@@ -15,7 +15,7 @@ source .venv/bin/activate
 cp 06_mapping_navigation/station.example.json thursday.station.json
 ```
 
-On PowerShell, activate with `.venv\Scripts\Activate.ps1` and copy the profile with `Copy-Item 06_mapping_navigation/station.example.json thursday.station.json`.
+On PowerShell, activate with `.\.venv\Scripts\Activate.ps1` and copy the profile with `Copy-Item 06_mapping_navigation/station.example.json thursday.station.json`.
 
 The instructor supplies your robot’s rosbridge URL and verifies the map, checkpoints, and motion settings. The example profile is disabled and its coordinates are placeholders. Once your station file is ready, run:
 

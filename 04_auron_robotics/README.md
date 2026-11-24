@@ -4,7 +4,7 @@
 
 Work in pairs at your assigned physical Auron. One student operates the laptop and one watches the robot and the practice area. Switch roles after the direct ROS exercise. The instructor prepares Auron in manual mode with the supported assisted-teleop path ready and checks an independent stop.
 
-See the [host Python setup](../README.md#host-python-for-topics-0609). Run the commands from the checkout root.
+See the [host Python setup](../README.md#host-python-for-topics-0613). Run the commands from the checkout root.
 
 ## 06 · Robot Control and Sensing
 

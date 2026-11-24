@@ -2,7 +2,7 @@
 
 [Workshop topic index](../README.md#topics)
 
-Use the [host Python setup](../README.md#host-python-for-topics-0609) on your laptop. Run all Python commands from the checkout root.
+Use the [host Python setup](../README.md#host-python-for-topics-0613) on your laptop. Run all Python commands from the checkout root.
 
 ## 07 · Connect Auron to ROS MCP
 
